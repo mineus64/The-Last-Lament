@@ -12,11 +12,12 @@ public class CharacterData
     public int entityID;
     [Header("Player Cosmetic Variables")]
     public string charName;
-    [Header("Player Equipment Variables")]
+    [Header("Player Inventory Variables")]
+    public ItemSlot[] inventory;
     public ushort[] equipment;
 #endregion
 #region Constructors
-    public CharacterData(int characterID, int accountID, string charName, int entityID, ushort[] equipment) 
+    public CharacterData(int characterID, int accountID, string charName, int entityID, ItemSlot[] inventory = null, ushort[] equipment = null) 
     {
         // Identification Variables
         this.characterID = characterID;                                 // Set characterID
@@ -26,7 +27,8 @@ public class CharacterData
         this.entityID = entityID;                                       // Set entityID
         // Player Cosmetic Variables
         this.charName = charName;                                       // Set charName
-        // Player Equipment Varibles
+        // Player inventory Varibles
+        this.inventory = inventory;                                     // Set inventory
         this.equipment = equipment;                                     // Set equipment
     }
 #endregion

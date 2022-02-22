@@ -15,10 +15,13 @@ public class Entity
     public ushort region;
     public byte interior;
     public Vector2 position;
+    [Header("Appearance Variables")]
+    public uint entityBase;
+    public ushort[] entityClothes;
 #endregion
 #region Constructors
     // Constructor for a basic entity with no location given
-    public Entity(int entityID, EntityType entityType, ushort region = 0, byte interior = 0, Vector2 position = default(Vector2), int characterID = 0) 
+    public Entity(int entityID, EntityType entityType = EntityType.Player, ushort region = 0, byte interior = 0, Vector2 position = default(Vector2), int characterID = 0, uint entityBase = 0, ushort[] entityClothes = null) 
     {
         // Set Identification Variables
         this.entityID = entityID;
@@ -29,6 +32,14 @@ public class Entity
         this.region = region;
         this.interior = interior;
         this.position = position;
+        // Set Appearance Variables
+        this.entityBase = entityBase;
+        if (entityClothes == null) {
+            entityClothes = new ushort[7];
+        }
+        else {
+            this.entityClothes = entityClothes;
+        }
     }
 #endregion
 #region Network Reader/Writers

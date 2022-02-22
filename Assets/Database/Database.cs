@@ -73,7 +73,7 @@ public static class Database
         // Create the entity the character will use
         entities.Add(entityID, new Entity(entityID, Entity.EntityType.Player, 0, 0, Vector2.zero, characterID));
         // Create the character
-        characterData.Add(characterID, new CharacterData(characterID, accountID, charName, entityID, new ushort[8]));
+        characterData.Add(characterID, new CharacterData(characterID, accountID, charName, entityID));
     }
 #endregion
 }
