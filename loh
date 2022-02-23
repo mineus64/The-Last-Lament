@@ -1,0 +1,14 @@
+[display]
+frameless=true
+fullscreen=true
+output-framerate=60
+transparent=true
+
+[gource]
+auto-skip-seconds=0.1
+file-extensions=true
+hide=bloom,filenames,mouse,progress
+key=true
+seconds-per-day=24
+title=Legends of Hope
+
