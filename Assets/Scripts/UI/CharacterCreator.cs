@@ -9,7 +9,9 @@ public class CharacterCreator : MonoBehaviour
 {
 #region Variables
     [Header("Output Image")]
-    public Image outputImage;
+    public GameObject preview;
+    public SpriteRenderer outputImage;
+    public Texture2D animBase;
     [Header("Race Selection")]
     public TextMeshProUGUI raceText;
     [Header("Character Customisation")]
@@ -34,6 +36,8 @@ public class CharacterCreator : MonoBehaviour
 #region General Methods
     void Start() 
     {
+        outputImage = preview.GetComponent<SpriteRenderer>();
+
         UpdateText();
         packedCharByte = IntPacker.PackInt(unpackedByteArray);
         UpdatePreview();
@@ -62,139 +66,75 @@ public class CharacterCreator : MonoBehaviour
         }
         UpdateText();
         packedCharByte = IntPacker.PackInt(unpackedByteArray);
+        UpdatePreview();
     }
     // Method to update the index for the sex of the character
     // Pass 1 for male and 0 for female
     public void UpdateSex(int input) 
     {
         if((unpackedByteArray[1] == 1 && input == 1) || (unpackedByteArray[1] == 0 && input == 0)) {
+
         }
         else {
             unpackedByteArray[1] = (byte)input;
         }
         UpdateText();
         packedCharByte = IntPacker.PackInt(unpackedByteArray);
+        UpdatePreview();
     }
     // Method to update the index for the ethnicity of the character
     // Pass 1 to increment and -1 to decrement
     // I HATE this code, see also Issue #13
     public void UpdateEthnicity(int input) 
     {
-        // If we want to increment the value...
         if (input > 0) {
-            // ...and if the character is male...
-            if (unpackedByteArray[1] == 1) {
-                // ...and if the change would overflow the value...
-                if (unpackedByteArray[2] + input > ItemDB.Current.raceDB[unpackedByteArray[0]].maleEthnicities.Length) {
-                    // ...reset the value.
-                    unpackedByteArray[2] = 0;
-                    return;
-                }
-                // ...and if the change would NOT overflow the value...
-                else {
-                    // ...increment the value.
-                    unpackedByteArray[2] += 1;
-                    return;
-                }
+            if (unpackedByteArray[2] + input > ItemDB.Current.raceDB[unpackedByteArray[0]].sexes[unpackedByteArray[1]].ethnicities.Length) {
+                unpackedByteArray[2] = 0;
+                return;
             }
-            // ...and if the character is female...
             else {
-                // ...and if the change would overflow the value...
-                if (unpackedByteArray[2] + input > ItemDB.Current.raceDB[unpackedByteArray[0]].femaleEthnicities.Length) {
-                    // ...reset the value.
-                    unpackedByteArray[2] = 0;
-                    return;
-                }
-                // ...and if the change would NOT overflow the value...
-                else { 
-                    // ...reset the value.
-                    unpackedByteArray[2] += 1;
-                    return;
-                }
+                unpackedByteArray[2] += 1;
+                return;
             }
         }
-        // If we want to decrement the value...
         else {
-            // ...and the value would underflow...
             if (unpackedByteArray[2] == 0) {
-                // ...and the character is male...
-                if (unpackedByteArray[1] == 1) {
-                    // ...wrap the value around to the highest possible.
-                    unpackedByteArray[2] = (byte)(ItemDB.Current.raceDB[unpackedByteArray[0]].maleEthnicities.Length - 1);
-                }
-                // ...and the character is female...
-                else {
-                    // ...wrap the value around to the highest possible.
-                    unpackedByteArray[2] = (byte)(ItemDB.Current.raceDB[unpackedByteArray[0]].femaleEthnicities.Length - 1);
-                }
+                unpackedByteArray[2] = (byte)(ItemDB.Current.raceDB[unpackedByteArray[0]].sexes[unpackedByteArray[1]].ethnicities.Length - 1);
             }
         }
         packedCharByte = IntPacker.PackInt(unpackedByteArray);
+        UpdatePreview();
     }
     // Method to increment the indices for the character's characteristics
     // Pass in 1-6 for which characteristic to update
     public void IncrementCharacteristic(int characteristic) 
     {
-        // ...and the character is male...
-        if (unpackedByteArray[1] == 1) {
-            // Get the characteristic to change
-            Characteristic thisCharacteristic = ItemDB.Current.raceDB[unpackedByteArray[0]].maleCharacteristics[characteristic - 1];
-            // Increment the characteristic
-            unpackedByteArray[characteristic + 2] += 1;
-            // Check for overflow
-            if (unpackedByteArray[characteristic + 2] >= thisCharacteristic.characteristicSpritesheets.Length) {
-                unpackedByteArray[characteristic + 2] = 0;
-            }
-        } 
-        // ...and the character is female...
-        else {
-            // ...and the character is female...
-            if (unpackedByteArray[1] == 0) {
-                // Get the characteristic to change
-                Characteristic thisCharacteristic = ItemDB.Current.raceDB[unpackedByteArray[0]].femaleCharacteristics[characteristic - 1];
-                // Increment the characteristic
-                unpackedByteArray[characteristic + 2] += 1;
-                // Check for overflow
-                if (unpackedByteArray[characteristic + 2] >= thisCharacteristic.characteristicSpritesheets.Length) {
-                    unpackedByteArray[characteristic + 2] = 0;
-                }
-            }
+        // Get the characteristic to change
+        Characteristic thisCharacteristic = ItemDB.Current.raceDB[unpackedByteArray[0]].sexes[unpackedByteArray[1]].characteristics[characteristic - 1];
+        // Increment the characteristic
+        unpackedByteArray[characteristic + 2] += 1;
+        // Check for overflow
+        if (unpackedByteArray[characteristic + 2] >= thisCharacteristic.characteristicSpritesheets.Length) {
+            unpackedByteArray[characteristic + 2] = 0;
         }
         
         packedCharByte = IntPacker.PackInt(unpackedByteArray);
+        UpdatePreview();
     }
     // Method to decrement the indices for the character's characteristics
     // Pass in 1-6 for which characteristic to update
     public void DecrementCharacteristic(int characteristic) 
     {
-        // ...and the character is male...
-        if (unpackedByteArray[1] == 1) {
-            // Get the characteristic to change
-            Characteristic thisCharacteristic = ItemDB.Current.raceDB[unpackedByteArray[0]].maleCharacteristics[characteristic - 1];
-            // ...and the value would underflow...
-            if ((int)unpackedByteArray[characteristic + 2] - 1 < 0) {
-                unpackedByteArray[characteristic + 2] = (byte)(thisCharacteristic.characteristicSpritesheets.Length - 1);
-            }
-            // ...and the value will not underflow...
-            else {
-                unpackedByteArray[characteristic + 2] -= 1;
-            }
+        Characteristic thisCharacteristic = ItemDB.Current.raceDB[unpackedByteArray[0]].sexes[unpackedByteArray[1]].characteristics[characteristic - 1];
+        if ((int)unpackedByteArray[characteristic + 2] - 1 < 0) {
+            unpackedByteArray[characteristic + 2] = (byte)(thisCharacteristic.characteristicSpritesheets.Length - 1);
         }
-        // ...and the character is female...
         else {
-            // Get the characteristic to change
-            Characteristic thisCharacteristic = ItemDB.Current.raceDB[unpackedByteArray[0]].femaleCharacteristics[characteristic - 1];
-            // ...and the value would underflow...
-            if ((int)unpackedByteArray[characteristic + 2] - 1 < 0) {
-                unpackedByteArray[characteristic + 2] = (byte)(thisCharacteristic.characteristicSpritesheets.Length - 1);
-            }
-            // ...and the value will not underflow...
-            else {
-                unpackedByteArray[characteristic + 2] -= 1;
-            }
+            unpackedByteArray[characteristic + 2] -= 1;
         }
                 
         packedCharByte = IntPacker.PackInt(unpackedByteArray);
+        UpdatePreview();
     }
     // Method to update the text fields based on the race data
     public void UpdateText() 
@@ -204,31 +144,15 @@ public class CharacterCreator : MonoBehaviour
         // Update the race name
         raceText.text = currentRace.raceName;
         // Update the characteristic names
-        // If the character is male
-        if (unpackedByteArray[1] == 1) {
-            for (int i = 0; i < 6; i ++) {
-                if (currentRace.maleCharacteristics.Length - 1 < i) {
-                    characteristicTexts[i].transform.gameObject.SetActive(false);
-                }
-                else {
-                    characteristicTexts[i].transform.gameObject.SetActive(true);
-                    characteristicTexts[i].text = currentRace.maleCharacteristics[i].characteristicName;
-                }
+        for (int i = 0; i < 6; i ++) {
+            if (currentRace.sexes[unpackedByteArray[1]].characteristics.Length - 1 < i) {
+                characteristicTexts[i].transform.gameObject.SetActive(false);
+            }
+            else {
+                characteristicTexts[i].transform.gameObject.SetActive(true);
+                characteristicTexts[i].text = currentRace.sexes[unpackedByteArray[1]].characteristics[i].characteristicName;
             }
         }
-        // If the character is female
-        else {
-            for (int i = 0; i < 6; i ++) {
-                if (currentRace.femaleCharacteristics.Length - 1 < i) {
-                    characteristicTexts[i].transform.gameObject.SetActive(false);
-                }
-                else {
-                    characteristicTexts[i].transform.gameObject.SetActive(true);
-                    characteristicTexts[i].text = currentRace.femaleCharacteristics[i].characteristicName;
-                }
-            }
-        }
-
     }
     /*
     // Method to pack the byte
@@ -255,7 +179,24 @@ public class CharacterCreator : MonoBehaviour
     // Method to update the character preview
     public void UpdatePreview() 
     {
+        // Create the input spritesheet array
+        Texture2D[] spriteLayers;
+        // Get the relevant race characteristics
 
+        // Get the number of iterations
+        int iterations;
+        iterations = ItemDB.Current.raceDB[unpackedByteArray[0]].sexes[unpackedByteArray[1]].characteristics.Length;
+        // Set the length of spriteLayers
+        spriteLayers = new Texture2D[iterations + 1];
+        // Add the player ethnicity base to the spritelayers array
+        spriteLayers[0] = ItemDB.Current.raceDB[unpackedByteArray[0]].sexes[unpackedByteArray[1]].ethnicities[unpackedByteArray[2]].texture;
+        // Add the player characteristics to the spritelayers array
+        for (int i = 0; i < iterations; i++) {
+            Debug.Log("Iteration " + i + " of " + iterations);
+            spriteLayers[i + 1] = ItemDB.Current.raceDB[unpackedByteArray[0]].sexes[unpackedByteArray[1]].characteristics[i].characteristicSpritesheets[unpackedByteArray[i + 3]].texture;
+        }
+        // Do player sprite generation
+        outputImage.sharedMaterial.SetTexture("_MainTex", PlayerSpriteGenerator.GeneratePlayerSprite(animBase, spriteLayers));
     }
 #endregion
 }

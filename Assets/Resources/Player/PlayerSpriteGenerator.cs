@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 #if !UNITY_SERVER || UNITY_EDITOR
@@ -33,6 +34,8 @@ public static class PlayerSpriteGenerator
         output.SetPixels32(outputPixels);
         output.Apply();
         output.filterMode = FilterMode.Point;
+        // Debug
+        File.WriteAllBytes(Application.dataPath + "/Resources/debug.png", output.EncodeToPNG());
         // Return the output texture
         return output;
     }

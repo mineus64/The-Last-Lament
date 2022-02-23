@@ -11,12 +11,7 @@ public class PlayerRace : ScriptableObject
     public string raceName;
     #endregion
     #region Appearance Data
-    [Header("Male Appearance")]
-    public Sprite[] maleEthnicities = new Sprite[8];
-    public Characteristic[] maleCharacteristics;
-    [Header("Female Appearance")]
-    public Sprite[] femaleEthnicities = new Sprite[8];
-    public Characteristic[] femaleCharacteristics;
+    public Sex[] sexes;
     #endregion
 #endregion
 #region Constructors
@@ -24,11 +19,23 @@ public class PlayerRace : ScriptableObject
 #endregion
 }
 
+// Class for individual characteristic (ie. hair, facial hair, eyes, etc.) data
 [System.Serializable]
 public class Characteristic 
 {
 #region Variables
     public string characteristicName;
     public Sprite[] characteristicSpritesheets;
+#endregion
+}
+
+// Class for individual sex (male, female) data
+[System.Serializable]
+public class Sex
+{
+#region Variables
+    public string sexName;
+    public Sprite[] ethnicities;
+    public Characteristic[] characteristics;
 #endregion
 }
