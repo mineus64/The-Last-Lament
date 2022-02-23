@@ -25,18 +25,17 @@ public class CharacterCreator : MonoBehaviour
     5: Characteristic 3
     6: Characteristic 4
     7: Characteristic 5
-    8: Characteristic 6
     
     This then gets packed down into the byte that will get passed to the server and stored for the character.
     */
     public byte[] unpackedByteArray = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-    public uint packedCharByte = 0;
+    public int packedCharByte = 0;
 #endregion
 #region General Methods
     void Start() 
     {
         UpdateText();
-        UpdatePackedByte();
+        packedCharByte = IntPacker.PackInt(unpackedByteArray);
         UpdatePreview();
     }
 #endregion
@@ -62,7 +61,7 @@ public class CharacterCreator : MonoBehaviour
             }
         }
         UpdateText();
-        UpdatePackedByte();
+        packedCharByte = IntPacker.PackInt(unpackedByteArray);
     }
     // Method to update the index for the sex of the character
     // Pass 1 for male and 0 for female
@@ -74,7 +73,7 @@ public class CharacterCreator : MonoBehaviour
             unpackedByteArray[1] = (byte)input;
         }
         UpdateText();
-        UpdatePackedByte();
+        packedCharByte = IntPacker.PackInt(unpackedByteArray);
     }
     // Method to update the index for the ethnicity of the character
     // Pass 1 to increment and -1 to decrement
@@ -130,7 +129,7 @@ public class CharacterCreator : MonoBehaviour
                 }
             }
         }
-        UpdatePackedByte();
+        packedCharByte = IntPacker.PackInt(unpackedByteArray);
     }
     // Method to increment the indices for the character's characteristics
     // Pass in 1-6 for which characteristic to update
@@ -162,7 +161,7 @@ public class CharacterCreator : MonoBehaviour
             }
         }
         
-        UpdatePackedByte();
+        packedCharByte = IntPacker.PackInt(unpackedByteArray);
     }
     // Method to decrement the indices for the character's characteristics
     // Pass in 1-6 for which characteristic to update
@@ -195,7 +194,7 @@ public class CharacterCreator : MonoBehaviour
             }
         }
                 
-        UpdatePackedByte();
+        packedCharByte = IntPacker.PackInt(unpackedByteArray);
     }
     // Method to update the text fields based on the race data
     public void UpdateText() 
@@ -231,6 +230,7 @@ public class CharacterCreator : MonoBehaviour
         }
 
     }
+    /*
     // Method to pack the byte
     public void UpdatePackedByte() 
     {
@@ -251,6 +251,7 @@ public class CharacterCreator : MonoBehaviour
             packedCharByte += (uint)unpackedByteArray[i] * (uint)Mathf.Pow(2, pow);
         }
     }
+    */
     // Method to update the character preview
     public void UpdatePreview() 
     {
