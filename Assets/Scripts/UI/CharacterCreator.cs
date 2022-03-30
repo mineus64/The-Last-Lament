@@ -179,6 +179,7 @@ public class CharacterCreator : MonoBehaviour
     // Method to update the character preview
     public void UpdatePreview() 
     {
+        Debug.Log("Updating Preview");
         // Create the input spritesheet array
         Texture2D[] spriteLayers;
         // Get the relevant race characteristics
@@ -192,11 +193,11 @@ public class CharacterCreator : MonoBehaviour
         spriteLayers[0] = ItemDB.Current.raceDB[unpackedByteArray[0]].sexes[unpackedByteArray[1]].ethnicities[unpackedByteArray[2]].texture;
         // Add the player characteristics to the spritelayers array
         for (int i = 0; i < iterations; i++) {
-            Debug.Log("Iteration " + i + " of " + iterations);
             spriteLayers[i + 1] = ItemDB.Current.raceDB[unpackedByteArray[0]].sexes[unpackedByteArray[1]].characteristics[i].characteristicSpritesheets[unpackedByteArray[i + 3]].texture;
         }
         // Do player sprite generation
-        outputImage.sharedMaterial.SetTexture("_MainTex", PlayerSpriteGenerator.GeneratePlayerSprite(animBase, spriteLayers));
+        // outputImage.sprite = Sprite.Create(PlayerSpriteGenerator.GeneratePlayerSprite(animBase, spriteLayers), new Rect(0.0f, 0.0f, 1.0f, 1.0f), new Vector2(0.5f, 0.5f));
+        outputImage.material.SetTexture("_MainTex", PlayerSpriteGenerator.GeneratePlayerSprite(animBase, spriteLayers));
     }
 #endregion
 }

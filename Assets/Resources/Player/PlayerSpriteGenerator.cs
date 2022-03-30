@@ -28,13 +28,14 @@ public static class PlayerSpriteGenerator
         */
         // Combine the layers
         for (int i = 0; i < spriteLayers.Length; i++) {
-            FillSprite(outputPixels, spriteLayers[i].GetPixels32());
+          Color32[] layer = spriteLayers[i].GetPixels32();
+            FillSprite(layer, outputPixels);
         }
         // Set the pixels to the output texture
         output.SetPixels32(outputPixels);
         output.Apply();
         output.filterMode = FilterMode.Point;
-        // Debug
+         // Debug
         File.WriteAllBytes(Application.dataPath + "/Resources/debug.png", output.EncodeToPNG());
         // Return the output texture
         return output;
